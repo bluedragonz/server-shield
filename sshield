@@ -1,0 +1,210 @@
+#!/bin/sh
+
+###################################################
+### 	Server Shield v1.0.0 by Brian Holt 		###
+###################################################
+
+### Firewall Hardening
+### Kernel Hardening
+### Data Leakage Protection
+### Portscan Protection
+### Rootkit Protection
+### DoS Protection
+### Spoof Protection
+### Bogus TCP Protection
+### SYN Flood Protection
+
+# Public Ports
+pub_serv=21,25,80,110,143,443
+
+# Interface
+int_if=eth0
+
+# IP
+int_ip=$(/sbin/ifconfig | grep '\<inet\>' | sed -n '1p' | tr -s ' ' | cut -d ' ' -f3 | cut -d ':' -f2)
+
+# Copyright (c) 2012 Brian Holt. All rights reserved.
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#  
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+
+# Don't edit below here unless you know what you're doing
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/sbin/iptables
+NAME=sshield
+
+test -x $DAEMON || exit 0
+
+set -e
+
+iptables=/sbin/iptables
+
+function sshield_start
+{
+
+	if grep "unset HISTFILE" /etc/profile >/dev/null
+	then
+		find / -iname '*.bash_history' -type f -exec rm -f {} \;
+	else
+	    echo "unset HISTFILE" >> /etc/profile
+	    find / -iname '*.bash_history' -type f -exec rm -f {} \;
+	fi
+
+	# Block: Rootkit Execution
+	mount -o bind /tmp /tmp
+	mount -o bind /dev/shm /dev/shm
+	mount -o remount,noexec /tmp
+	mount -o remount,noexec /dev/shm
+
+	# Protect against ICMP "Smurf"
+	echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
+
+	# Protect against TCP Time-Wait          
+	echo 1 > /proc/sys/net/ipv4/tcp_rfc1337
+
+	# Don't bother logging bogus error responses					 
+	echo 1 > /proc/sys/net/ipv4/icmp_ignore_bogus_error_responses
+
+	# Don't bother logging spoofed IP addresses
+	echo 0 > /proc/sys/net/ipv4/conf/all/log_martians
+
+	# Protect against Source Routed Packets                
+	echo 0 > /proc/sys/net/ipv4/conf/all/accept_source_route         
+
+	# Defaults
+	$iptables -P INPUT   DROP
+	$iptables -P FORWARD DROP
+	$iptables -P OUTPUT  DROP
+
+	# Block: Bogus TCP
+	$iptables -A INPUT -p tcp -m tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+	$iptables -A INPUT -p tcp -m tcp --tcp-flags SYN,RST SYN,RST -j DROP
+
+	# Block: Broadcasts
+	$iptables -A INPUT  -i $int_if -d 255.255.255.255 -j DROP
+	$iptables -A INPUT  -i $int_if -d 192.168.255.255 -j DROP
+	$iptables -A INPUT  -i $int_if -d 192.168.1.255   -j DROP
+	$iptables -A INPUT             -d 10.0.0.0/8      -j DROP
+	$iptables -A INPUT             -d 169.254.0.0/16  -j DROP
+
+	# Limit: TCP Reset
+	$iptables -A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/second --limit-burst 2 -j ACCEPT
+
+	# Block: Spoofed Packets
+	$iptables -A INPUT  -i $int_if -s $int_ip -m recent --set -j DROP
+
+	# Accept: Loopback
+	$iptables -A INPUT  -i lo -j ACCEPT
+	$iptables -A OUTPUT -o lo -j ACCEPT
+
+	# Limit: ICMP
+	$iptables -A INPUT  -p icmp -m limit --limit 30/s --limit-burst 200 -j ACCEPT
+	$iptables -A INPUT  -p icmp -j DROP
+
+	# Accept: Established Connections
+	$iptables -A OUTPUT -o $int_if -j ACCEPT
+	$iptables -A INPUT  -i $int_if -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+	# Accept: Public Services
+	$iptables -A INPUT -i $int_if -p tcp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
+
+	# Limit: SSH
+	$iptables -A INPUT -p tcp --dport 22 -m recent --rcheck --seconds 60 --hitcount 2 --name SSH -j LOG --log-prefix "SH "
+	$iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 60 --hitcount 2 --name SSH -j DROP
+	$iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH -j ACCEPT
+
+	# Finish: Log and Drop
+	$iptables -A INPUT   -j LOG --log-prefix "IN "
+	$iptables -A INPUT   -j REJECT --reject-with icmp-port-unreachable
+	$iptables -A OUTPUT  -j LOG --log-prefix "OU "
+	$iptables -A OUTPUT  -j REJECT --reject-with icmp-port-unreachable
+	$iptables -A FORWARD -j LOG --log-prefix "FW "
+	$iptables -A FORWARD -j REJECT --reject-with icmp-port-unreachable
+}
+
+function sshield_fallback_start
+{
+	# Flush
+	$iptables -F
+	$iptables -F -t mangle
+	$iptables -X -t mangle
+	$iptables -F -t nat
+	$iptables -X -t nat
+	$iptables -X
+
+	# Defaults
+	$iptables -P INPUT   DROP
+	$iptables -P FORWARD DROP
+	$iptables -P OUTPUT  DROP
+
+	# Accept: Loopback
+	$iptables -A INPUT  -i lo -j ACCEPT
+	$iptables -A OUTPUT -o lo -j ACCEPT
+
+	# Limit: ICMP
+	$iptables -A INPUT  -i $int_if -d $int_ip -p icmp -j ACCEPT
+
+	# Accept: Established Connections
+	$iptables -A OUTPUT -o $int_if -j ACCEPT
+	$iptables -A INPUT  -i $int_if -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+	# Allow: Public Services
+	$iptables -A INPUT -i $int_if -p tcp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
+
+	# Finish: Log and Drop
+	$iptables -A INPUT   -j LOG --log-prefix "IN "
+	$iptables -A OUTPUT  -j LOG --log-prefix "OU "
+	$iptables -A FORWARD -j LOG --log-prefix "FW "
+}
+
+function sshield_stop
+{
+	# Flush
+	$iptables -F
+	$iptables -F -t mangle
+	$iptables -X -t mangle
+	$iptables -F -t nat
+	$iptables -X -t nat
+	$iptables -X
+
+	# Default
+	$iptables -P INPUT   ACCEPT
+	$iptables -P FORWARD ACCEPT
+	$iptables -P OUTPUT  ACCEPT
+}
+
+case "$1" in
+  start)
+	echo -n "Starting $NAME: "
+	sshield_start || sshield_fallback_start
+	echo "OK"
+	;;
+  stop)
+	echo -n "Stopping $NAME: "
+	sshield_stop
+	echo "OK"
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
