@@ -10,7 +10,7 @@ Features
 * Firewall Hardening
 * Kernel Hardening
 * Data Leakage Protection
-* Portscan Protection
+* ICMP/Ping Flood Protection
 * Rootkit Protection
 * DoS Protection
 * Spoof Protection
