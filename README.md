@@ -22,7 +22,7 @@ Installation
 ------------
 
     git clone https://github.com/Brian-Holt/server-shield
-    
-    cd server-shield;chmod +x sshield;cp sshield /etc/init.d/
+
+    cd server-shield;chmod +x sshield;cp sshield /etc/init.d
 
     /etc/init.d/sshield start    
