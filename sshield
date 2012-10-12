@@ -21,7 +21,7 @@ pub_serv=21,25,80,110,143,443
 int_if=eth0
 
 # IP
-int_ip=$(/sbin/ifconfig | grep '\<inet\>' | sed -n '1p' | tr -s ' ' | cut -d ' ' -f3 | cut -d ':' -f2)
+int_ip=$(hostname -i)
 
 # Copyright (c) 2012 Brian Holt. All rights reserved.
 # 
@@ -125,7 +125,6 @@ function sshield_start
 	$iptables -A INPUT -i $int_if -p tcp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
 
 	# Limit: SSH
-	$iptables -A INPUT -p tcp --dport 22 -m recent --rcheck --seconds 60 --hitcount 2 --name SSH -j LOG --log-prefix "SH "
 	$iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 60 --hitcount 2 --name SSH -j DROP
 	$iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH -j ACCEPT
 
