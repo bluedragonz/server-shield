@@ -96,6 +96,15 @@ function sshield_start
 	$iptables -A INPUT -p tcp -m tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
 	$iptables -A INPUT -p tcp -m tcp --tcp-flags SYN,RST SYN,RST -j DROP
 
+	# Block: Fragmented Packets
+	$iptables -A INPUT -f -j DROP
+
+	# Block: XMAS Packets
+	$iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+
+	# Block: NULL Packets
+	$iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+
 	# Block: Broadcasts
 	$iptables -A INPUT  -i $int_if -d 255.255.255.255 -j DROP
 	$iptables -A INPUT  -i $int_if -d 192.168.255.255 -j DROP
