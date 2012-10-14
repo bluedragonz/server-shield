@@ -10,7 +10,7 @@ Features
 --------
 
 * Firewall Hardening
-* Kernel Hardening
+* TCP Hardening
 * Data Leakage Protection
 * ICMP/Ping Flood Protection
 * Rootkit Protection
@@ -23,7 +23,6 @@ Features
 Requires
 --------
 
-* pkgtools ("yum install pkgtools")
 * iptables ("yum install iptables")
 
 
