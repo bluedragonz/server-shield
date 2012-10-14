@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###################################################
-### 	Server Shield v1.0.2 by Brian Holt 	###
+### 	Server Shield v1.0.3 by Brian Holt 	###
 ###################################################
 
 ### Firewall Hardening
@@ -17,10 +17,10 @@
 # Public Ports
 pub_serv=21,25,80,110,143,443
 
-# Interface
-int_if=eth0
+# Automatically detect public interface
+int_if=$(ifconfig -a | grep -i "link[ ]*encap[ ]*:[ ]*ethernet" | awk 'BEGIN{ iface="z" }{ if( $1 ~ /^eth/ && iface > $1 ) iface=$1 } END{ print iface }')
 
-# IP
+# Automatically detect IP address
 int_ip=$(hostname -i)
 
 # Copyright (c) 2012 Brian Holt. All rights reserved.
