@@ -1,7 +1,9 @@
 Server Shield
 =============
 
-Actively hardens, deters, and protects Linux/BSD servers from hacking, DoS, and other malicious behavior.
+Server Shield is a lightweight method of protecting and hardening your Linux server. It is
+easy to install, hard to mess up, and makes your server instantly and effortlessly resilient
+to many basic and advanced attacks.
 
 
 Features
@@ -16,6 +18,13 @@ Features
 * Spoof Protection
 * Bogus TCP Protection
 * SYN Flood Protection
+
+
+Requires
+--------
+
+* pkgtools ("yum install pkgtools")
+* iptables ("yum install iptables")
 
 
 Installation
