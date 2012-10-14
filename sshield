@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 ###################################################
-### 	Server Shield v1.0.1 by Brian Holt 	###
+### 	Server Shield v1.0.2 by Brian Holt 	###
 ###################################################
 
 ### Firewall Hardening
