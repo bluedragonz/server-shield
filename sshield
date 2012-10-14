@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ###################################################
-### 	Server Shield v1.0.0 by Brian Holt 	###
+### 	Server Shield v1.0.1 by Brian Holt 	###
 ###################################################
 
 ### Firewall Hardening
@@ -165,7 +165,7 @@ function sshield_fallback_start
 	$iptables -A INPUT  -i lo -j ACCEPT
 	$iptables -A OUTPUT -o lo -j ACCEPT
 
-	# Limit: ICMP
+	# Accept: ICMP
 	$iptables -A INPUT  -i $int_if -d $int_ip -p icmp -j ACCEPT
 
 	# Accept: Established Connections
