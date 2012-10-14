@@ -23,7 +23,7 @@ Features
 * SYN Flood Protection
 
 
-Requires
+Required
 --------
 
 * iptables ("yum install iptables")
