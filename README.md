@@ -37,7 +37,7 @@ Installation
 
 Requirements
 --------
-All requirements will be automatically installed and updated, as long as you have yum.
+All requirements will be automatically installed and updated, as long as "yum" is installed.
 
 * yum
 * iptables
