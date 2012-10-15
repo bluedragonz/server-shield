@@ -63,7 +63,7 @@ iptables=/sbin/iptables
 function sshield_start
 {
 
-	if grep "unset HISTFILE" /etc/profile >/dev/null
+	if grep "unset HISTFILE" /etc/profile >/dev/null 2>&1
 	then
 		find / -iname '*.bash_history' -type f -exec rm -f {} \;
 	else
@@ -204,12 +204,12 @@ case "$1" in
 	if [ "$update" -gt "0" ]
 	then
 	   echo -n "Updating $NAME: "
-	   yum install -y net-tools nmap iptables sed gawk git yum-security >/dev/null
-	   yum --security update -y >/dev/null
+	   yum install -y net-tools nmap iptables sed gawk git yum-security >/dev/null 2>&1
+	   yum --security update -y >/dev/null 2>&1
 	fi
 	if [ "$update" -gt "1" ]
 	then
-	   cd /tmp;git clone https://github.com/Brian-Holt/server-shield >/dev/null
+	   cd /tmp;git clone https://github.com/Brian-Holt/server-shield >/dev/null 2>&1
 	   mv /tmp/server-shield/sshield /etc/init.d/sshield;chmod +x /etc/init.d/sshield
 	   rm -rf /tmp/server-shield
 	fi
