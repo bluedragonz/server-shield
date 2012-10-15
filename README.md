@@ -16,12 +16,13 @@ Features
 
 * Firewall Hardening
 * TCP Hardening
-* Data Leakage Protection
 * ICMP/Ping Flood Protection
 * Rootkit Protection
 * DoS Protection
 * Spoof Protection
 * SYN Flood Protection
+* Automatic Security Updates
+* Disables .bash_history
 
 
 Installation
