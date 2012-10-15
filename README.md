@@ -1,4 +1,4 @@
-Server Shield v1.0.6
+Server Shield v1.0.7
 =============
 
 Server Shield is a lightweight method of protecting and hardening your Linux server. It is
@@ -19,7 +19,7 @@ Features
 * ICMP/Ping Flood Protection
 * DoS Protection
 * Spoof Protection
-* SYN Flood Protection
+* FTP/SSH Bruteforce Protection
 * Automatic Security Updates
 * Disables Bash History
 
