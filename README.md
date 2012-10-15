@@ -19,7 +19,6 @@ Features
 * Rootkit Protection
 * DoS Protection
 * Spoof Protection
-* Bogus TCP Protection
 * SYN Flood Protection
 
 
