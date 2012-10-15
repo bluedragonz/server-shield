@@ -205,7 +205,7 @@ case "$1" in
 	then
 	   echo -n "Updating $NAME: "
 	   yum install -y net-tools nmap iptables sed gawk git yum-security >/dev/null
-	   yum --security update >/dev/null
+	   yum --security update -y >/dev/null
 	fi
 	if [ "$update" -gt "1" ]
 	then
