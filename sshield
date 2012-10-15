@@ -34,6 +34,7 @@
 ### FTP/SSH Bruteforce Protection
 ### Automatic Security Updates
 ### Disables Bash History
+### DNS Amplification Protection
 
 # Automatic Updates
 # 1: ipconfig, nmap, net-tools, sed, gawk, git, yum-security
