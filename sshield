@@ -91,10 +91,6 @@ function sshield_start {
 	$iptables -P INPUT   DROP
 	$iptables -P FORWARD DROP
 	$iptables -P OUTPUT  DROP
-	
-	# Protect against DNS amplification attack
-	$iptables -A INPUT -p udp -m udp -m recent -i $int_if --dport 53 -j ACCEPT --set --name DNS --rsource
-	$iptables -A INPUT -p udp -m udp -m recent -i $int_if --dport 53 --update --seconds 20 --hitcount 20 --name DNS --rsource -j DROP
 
 	# Block: Bogus TCP
 	$iptables -A INPUT -p tcp -m tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
@@ -123,6 +119,10 @@ function sshield_start {
 	$iptables -A INPUT  -i lo -j ACCEPT
 	$iptables -A OUTPUT -o lo -j ACCEPT
 	
+	# Protect against DNS amplification attack
+	$iptables -A INPUT -p udp -m udp -m recent -i $int_if --dport 53 -j ACCEPT --set --name DNS --rsource
+	$iptables -A INPUT -p udp -m udp -m recent -i $int_if --dport 53 --update --seconds 20 --hitcount 20 --name DNS --rsource -j DROP
+
 	# Limit: ICMP
 	$iptables -A INPUT  -p icmp -m limit --limit 30/s --limit-burst 200 -j ACCEPT
 	$iptables -A INPUT  -p icmp -j DROP
@@ -130,7 +130,6 @@ function sshield_start {
 	# Accept: Established Connections
 	$iptables -A OUTPUT -o $int_if -j ACCEPT
 	$iptables -A INPUT  -i $int_if -m state --state ESTABLISHED,RELATED -j ACCEPT
-
 	$iptables -A INPUT -i $int_if -p tcp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
 	$iptables -A INPUT -i $int_if -p udp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
 	
