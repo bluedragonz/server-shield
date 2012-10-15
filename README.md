@@ -22,6 +22,7 @@ Features
 * FTP/SSH Bruteforce Protection
 * Automatic Security Updates
 * Disables Bash History
+* DNS Amplification Protection
 
 
 Installation
