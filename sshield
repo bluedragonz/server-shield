@@ -2,7 +2,7 @@
 
 #####################################################
 ###						  ###
-### 	 Server Shield v1.0.6 by Brian Holt 	  ###
+### 	 Server Shield v1.0.7 by Brian Holt 	  ###
 ###						  ###
 #####################################################
 
@@ -12,10 +12,10 @@
 # the rights to use, copy, modify, merge, publish, distribute, sublicense,
 # and/or sell copies of the Software, and to permit persons to whom the
 # Software is furnished to do so, subject to the following conditions:
-# 
+
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-#  
+  
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,12 +24,14 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+# Copyright (c) 2012 Brian Holt. All rights reserved.
+
 ### Firewall Hardening
 ### TCP Hardening
 ### ICMP/Ping Flood Protection
 ### DoS Protection
 ### Spoof Protection
-### SYN Flood Protection
+### SSH/FTP Bruteforce Protection
 ### Automatic Security Updates
 ### Disables Bash History
 
@@ -115,7 +117,7 @@ function sshield_start {
 	# Accept: Loopback
 	$iptables -A INPUT  -i lo -j ACCEPT
 	$iptables -A OUTPUT -o lo -j ACCEPT
-
+	
 	# Limit: ICMP
 	$iptables -A INPUT  -p icmp -m limit --limit 30/s --limit-burst 200 -j ACCEPT
 	$iptables -A INPUT  -p icmp -j DROP
@@ -126,10 +128,14 @@ function sshield_start {
 
 	$iptables -A INPUT -i $int_if -p tcp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
 	$iptables -A INPUT -i $int_if -p udp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
-
-	# Limit: SSH
-	$iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 60 --hitcount 2 --name SSH -j DROP
+	
+	# Block: SSH Bruteforcing
+	$iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 60 --hitcount 5 --name SSH -j DROP
 	$iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH -j ACCEPT
+	
+	# Block: FTP Bruteforcing
+	$iptables -A INPUT -p tcp --dport 21 -m recent --update --seconds 60 --hitcount 5 --name FTP -j DROP
+	$iptables -A INPUT -p tcp --dport 21 -m state --state NEW -m recent --set --name FTP -j ACCEPT
 
 	# Finish: Log and Drop
 	$iptables -A INPUT   -j LOG --log-prefix "IN "
@@ -221,5 +227,3 @@ case "$1" in
 esac
 
 exit 0
-
-# Copyright (c) 2012 Brian Holt. All rights reserved.
