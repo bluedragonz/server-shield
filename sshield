@@ -5,7 +5,7 @@
 ###################################################
 
 ### Firewall Hardening
-### Kernel Hardening
+### TCP Hardening
 ### Data Leakage Protection
 ### ICMP/Ping Flood Protection
 ### Rootkit Protection
