@@ -17,7 +17,6 @@ Features
 * Firewall Hardening
 * TCP Hardening
 * ICMP/Ping Flood Protection
-* Rootkit Protection
 * DoS Protection
 * Spoof Protection
 * SYN Flood Protection
