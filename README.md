@@ -22,7 +22,7 @@ Features
 * Spoof Protection
 * SYN Flood Protection
 * Automatic Security Updates
-* Disables .bash_history
+* Disables Bash History
 
 
 Installation
