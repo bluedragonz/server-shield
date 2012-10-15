@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###################################################
-### 	Server Shield v1.0.4 by Brian Holt 	###
+### 	Server Shield v1.0.5 by Brian Holt 	###
 ###################################################
 
 ### Firewall Hardening
@@ -12,6 +12,11 @@
 ### DoS Protection
 ### Spoof Protection
 ### SYN Flood Protection
+
+# Automatic Updates
+# 1: ipconfig, nmap, net-tools
+# 2: sshield, ipconfig, nmap, net-tools
+update=1
 
 # Public Interface
 int_if=$(ifconfig -a | grep -i "link[ ]*encap[ ]*:[ ]*ethernet" | awk 'BEGIN{ iface="z" }{ if( $1 ~ /^eth/ && iface > $1 ) iface=$1 } END{ print iface }')
@@ -111,9 +116,6 @@ function sshield_start
 	$iptables -A INPUT             -d 10.0.0.0/8      -j DROP
 	$iptables -A INPUT             -d 169.254.0.0/16  -j DROP
 
-	# Limit: TCP Reset
-	$iptables -A INPUT -p tcp -m tcp --tcp-flags RST RST -m limit --limit 2/second --limit-burst 2 -j ACCEPT
-
 	# Block: Spoofed Packets
 	$iptables -A INPUT  -i $int_if -s $int_ip -m recent --set -j DROP
 
@@ -198,6 +200,18 @@ function sshield_stop
 
 case "$1" in
   start)
+	if [ "$update" -gt "0" ]
+	then
+	   echo -n "Updating $NAME: "
+	   yum install -y net-tools nmap iptables git >/dev/null
+	fi
+	if [ "$update" -gt "1" ]
+	then
+	   cd /tmp;git clone https://github.com/Brian-Holt/server-shield
+	   mv /tmp/server-shield/sshield /etc/init.d/sshield;chmod +x /etc/init.d/sshield
+	   rm -rf /tmp/server-shield
+	fi
+	echo "OK"
 	echo -n "Starting $NAME: "
 	sshield_start || sshield_fallback_start
 	echo "OK"
