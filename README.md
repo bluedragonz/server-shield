@@ -25,15 +25,6 @@ Features
 * SYN Flood Protection
 
 
-Requirements
---------
-
-* iptables
-* nmap
-* net-tools
-* yum
-
-
 Installation
 ------------
 
@@ -42,3 +33,16 @@ Installation
     cd server-shield;chmod +x sshield;mv sshield /etc/init.d
 
     /etc/init.d/sshield start    
+
+
+Requirements
+--------
+All requirements will be automatically installed and updated, as long as you have yum.
+
+* yum
+* iptables
+* nmap
+* net-tools
+* sed
+* gawk
+* git
