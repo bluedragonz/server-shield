@@ -34,8 +34,8 @@ Installation
 
 Requirements
 --------
-Server Shield depends on several pieces of open source software to function properly. To make your life
-easier, these packages below will be automatically installed and updated for you.
+Server Shield depends on several pieces of open source software to function properly. These
+packages will be automatically installed and kept up to date:
 
 * yum
 * iptables
