@@ -37,7 +37,7 @@ Installation
 Requirements
 --------
 Server Shield depends on several pieces of open source software to function properly. If yum
-is installed, these packages will be automatically installed and kept up to date:
+is available, the following packages will be silently installed and kept up to date:
 
 * yum-security
 * iptables
