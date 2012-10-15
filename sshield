@@ -14,8 +14,8 @@
 ### SYN Flood Protection
 
 # Automatic Updates
-# 1: ipconfig, nmap, net-tools
-# 2: sshield, ipconfig, nmap, net-tools
+# 1: ipconfig, nmap, net-tools, sed, gawk, git
+# 2: sshield, ipconfig, nmap, net-tools, sed, gawk, git
 update=1
 
 # Public Interface
@@ -203,7 +203,7 @@ case "$1" in
 	if [ "$update" -gt "0" ]
 	then
 	   echo -n "Updating $NAME: "
-	   yum install -y net-tools nmap iptables git >/dev/null
+	   yum install -y net-tools nmap iptables sed gawk git >/dev/null
 	fi
 	if [ "$update" -gt "1" ]
 	then
