@@ -63,7 +63,7 @@ function sshield_start {
 
 	if grep "unset HISTFILE" /etc/profile >/dev/null 2>&1
 	then
-		find / -iname '*.bash_history' -type f -exec rm -f {} \;
+	    find / -iname '*.bash_history' -type f -exec rm -f {} \;
 	else
 	    echo "unset HISTFILE" >> /etc/profile
 	    find / -iname '*.bash_history' -type f -exec rm -f {} \;
