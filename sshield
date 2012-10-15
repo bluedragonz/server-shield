@@ -60,8 +60,7 @@ set -e
 
 iptables=/sbin/iptables
 
-function sshield_start
-{
+function sshield_start {
 
 	if grep "unset HISTFILE" /etc/profile >/dev/null 2>&1
 	then
@@ -148,8 +147,7 @@ function sshield_start
 	$iptables -A FORWARD -j REJECT --reject-with icmp-port-unreachable
 }
 
-function sshield_fallback_start
-{
+function sshield_fallback_start {
 	# Flush
 	$iptables -F
 	$iptables -F -t mangle
@@ -183,8 +181,7 @@ function sshield_fallback_start
 	$iptables -A FORWARD -j LOG --log-prefix "FW "
 }
 
-function sshield_stop
-{
+function sshield_stop {
 	# Flush
 	$iptables -F
 	$iptables -F -t mangle
