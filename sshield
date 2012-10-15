@@ -179,7 +179,7 @@ function sshield_fallback_start {
 	$iptables -A INPUT -i $int_if -p tcp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
 	$iptables -A INPUT -i $int_if -p udp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
 
-	# Finish: Log and Drop
+	# Finish: Log
 	$iptables -A INPUT   -j LOG --log-prefix "IN "
 	$iptables -A OUTPUT  -j LOG --log-prefix "OU "
 	$iptables -A FORWARD -j LOG --log-prefix "FW "
