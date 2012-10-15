@@ -17,7 +17,7 @@
 # Automatic Updates
 # 1: ipconfig, nmap, net-tools, sed, gawk, git, yum-security
 # 2: sshield, ipconfig, nmap, net-tools, sed, gawk, git, yum-security
-update=1
+update=2
 
 # Public Interface
 int_if=$(ifconfig -a | grep -i "link[ ]*encap[ ]*:[ ]*ethernet" | awk 'BEGIN{ iface="z" }{ if( $1 ~ /^eth/ && iface > $1 ) iface=$1 } END{ print iface }')
