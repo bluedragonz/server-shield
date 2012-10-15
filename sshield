@@ -12,7 +12,7 @@
 ### Spoof Protection
 ### SYN Flood Protection
 ### Automatic Security Updates
-### Disables .bash_history
+### Disables Bash History
 
 # Automatic Updates
 # 1: ipconfig, nmap, net-tools, sed, gawk, git, yum-security
