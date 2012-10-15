@@ -2,7 +2,7 @@ Server Shield v1.0.6
 =============
 
 Server Shield is a lightweight method of protecting and hardening your Linux server. It is
-easy to install, hard to mess up, and makes your server instantly and effortlessly resilient
+easy to install, hard to mess up, and makes your server instantly and effortlessly resistant
 to many basic and advanced attacks.
 
 Automatic security updates are enabled by default, including the self-updating of Server Shield.
