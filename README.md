@@ -40,6 +40,7 @@ Server Shield depends on several pieces of open source software to function prop
 packages will be automatically installed and kept up to date:
 
 * yum
+* yum-security
 * iptables
 * nmap
 * net-tools
