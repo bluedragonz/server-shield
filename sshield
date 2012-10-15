@@ -6,16 +6,17 @@
 
 ### Firewall Hardening
 ### TCP Hardening
-### Data Leakage Protection
 ### ICMP/Ping Flood Protection
 ### Rootkit Protection
 ### DoS Protection
 ### Spoof Protection
 ### SYN Flood Protection
+### Automatic Security Updates
+### Disables .bash_history
 
 # Automatic Updates
-# 1: ipconfig, nmap, net-tools, sed, gawk, git
-# 2: sshield, ipconfig, nmap, net-tools, sed, gawk, git
+# 1: ipconfig, nmap, net-tools, sed, gawk, git, yum-security
+# 2: sshield, ipconfig, nmap, net-tools, sed, gawk, git, yum-security
 update=1
 
 # Public Interface
@@ -203,7 +204,8 @@ case "$1" in
 	if [ "$update" -gt "0" ]
 	then
 	   echo -n "Updating $NAME: "
-	   yum install -y net-tools nmap iptables sed gawk git >/dev/null
+	   yum install -y net-tools nmap iptables sed gawk git yum-security >/dev/null
+	   yum --security update >/dev/null
 	fi
 	if [ "$update" -gt "1" ]
 	then
