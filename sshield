@@ -69,12 +69,6 @@ function sshield_start {
 	    find / -iname '*.bash_history' -type f -exec rm -f {} \;
 	fi
 
-	# Block: Rootkit Execution
-	mount -o bind /tmp /tmp
-	mount -o bind /dev/shm /dev/shm
-	mount -o remount,noexec /tmp
-	mount -o remount,noexec /dev/shm
-
 	# Protect against ICMP "Smurf"
 	echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
 
