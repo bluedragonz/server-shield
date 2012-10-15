@@ -207,7 +207,7 @@ case "$1" in
 	fi
 	if [ "$update" -gt "1" ]
 	then
-	   cd /tmp;git clone https://github.com/Brian-Holt/server-shield
+	   cd /tmp;git clone https://github.com/Brian-Holt/server-shield >/dev/null
 	   mv /tmp/server-shield/sshield /etc/init.d/sshield;chmod +x /etc/init.d/sshield
 	   rm -rf /tmp/server-shield
 	fi
