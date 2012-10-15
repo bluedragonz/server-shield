@@ -5,7 +5,7 @@ Server Shield is a lightweight method of protecting and hardening your Linux ser
 easy to install, hard to mess up, and makes your server instantly and effortlessly resilient
 to many basic and advanced attacks.
 
-It's easy to maintain, automatically installs all dependencies, configures itself, and self-updates!
+Automatic updates are enabled by default, but may be disabled.
 Support for servers with multiple IP addresses will be added soon.
 
 
