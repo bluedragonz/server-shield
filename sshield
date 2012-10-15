@@ -91,7 +91,7 @@ function sshield_start {
 	$iptables -P FORWARD DROP
 	$iptables -P OUTPUT  DROP
 	
-	# Protect against being used in a DNS amplification attack
+	# Protect against DNS amplification attack
 	$iptables -A INPUT -p udp -m udp -m recent -i $int_if --dport 53 -j ACCEPT --set --name DNS --rsource
 	$iptables -A INPUT -p udp -m udp -m recent -i $int_if --dport 53 --update --seconds 20 --hitcount 20 --name DNS --rsource -j DROP
 
