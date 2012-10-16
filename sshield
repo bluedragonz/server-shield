@@ -2,7 +2,7 @@
 
 #####################################################
 ###						  ###
-### 	 Server Shield v1.0.9 by Brian Holt 	  ###
+### 	 Server Shield v1.1.0 by Brian Holt 	  ###
 ###						  ###
 #####################################################
 
@@ -26,6 +26,7 @@
 
 # Copyright (c) 2012 Brian Holt. All rights reserved.
 
+### Slowloris Protection
 ### Firewall Hardening
 ### TCP Hardening
 ### ICMP/Ping Flood Protection
@@ -37,8 +38,8 @@
 ### DNS Amplification Protection
 
 # Automatic Updates
-# 1: ipconfig, nmap, net-tools, sed, gawk, git, yum-security
-# 2: sshield, ipconfig, nmap, net-tools, sed, gawk, git, yum-security
+# 1: ipconfig, nmap, net-tools, sed, gawk, git, yum-security, mod_antiloris
+# 2: sshield, ipconfig, nmap, net-tools, sed, gawk, git, yum-security, mod_antiloris
 update=2
 
 # Public Interface
@@ -187,17 +188,28 @@ function sshield_stop {
 
 case "$1" in
   start)
-	if [ "$update" -gt "0" ]
-	then
-	   echo -n "Updating $NAME: "
-	   yum install -y net-tools nmap iptables sed gawk git yum-security >/dev/null 2>&1
-	   yum --security update -y >/dev/null 2>&1
+	if [ "$update" -gt "0" ]; then
+	   	echo -n "Updating $NAME: "
+	   	yum install -y net-tools nmap iptables sed gawk git yum-security >/dev/null 2>&1
+	  	yum --security update -y >/dev/null 2>&1
+		rm -rf /tmp/server-shield; cd /tmp
+		git clone https://github.com/Brian-Holt/server-shield >/dev/null 2>&1
+		if test -e /usr/sbin/httpd; then
+		    if httpd -M 2>&1 | grep antiloris > /dev/null
+			then
+				echo "" >/dev/null
+			else
+				cd /tmp/server-shield
+				tar -xvjf /tmp/server-shield/mod_antiloris-0.4.tar.bz2 >/dev/null 2>&1
+				apxs -a -i -c /tmp/server-shield/mod_antiloris-0.4/mod_antiloris.c >/dev/null 2>&1
+				service httpd restart >/dev/null 2>&1
+			fi
+		fi
+		echo "OK"
 	fi
 	if [ "$update" -gt "1" ]
 	then
-	   cd /tmp;git clone https://github.com/Brian-Holt/server-shield >/dev/null 2>&1
-	   mv /tmp/server-shield/sshield /etc/init.d/sshield;chmod +x /etc/init.d/sshield
-	   rm -rf /tmp/server-shield
+	   	mv /tmp/server-shield/sshield /etc/init.d/sshield;chmod +x /etc/init.d/sshield
 	fi
 	sshield_stop
 	echo -n "Starting $NAME: "
