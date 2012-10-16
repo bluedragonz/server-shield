@@ -199,7 +199,7 @@ case "$1" in
 	   mv /tmp/server-shield/sshield /etc/init.d/sshield;chmod +x /etc/init.d/sshield
 	   rm -rf /tmp/server-shield
 	fi
-	echo "OK"
+	sshield_stop
 	echo -n "Starting $NAME: "
 	sshield_start || sshield_fallback_start
 	echo "OK"
