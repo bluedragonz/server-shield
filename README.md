@@ -1,4 +1,4 @@
-Server Shield v1.0.9
+Server Shield v1.1.0
 =============
 
 Server Shield is a lightweight method of protecting and hardening your Linux server. It is
@@ -14,6 +14,7 @@ Support for servers with multiple IP addresses will be added soon.
 Features
 --------
 
+* Slowloris Protection
 * Firewall Hardening
 * TCP Hardening
 * ICMP/Ping Flood Protection
