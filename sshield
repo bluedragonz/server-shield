@@ -87,23 +87,10 @@ function sshield_start {
 	# Protect against Source Routed Packets                
 	echo 0 > /proc/sys/net/ipv4/conf/all/accept_source_route         
 
-	# Defaults
+	# Just DROP, don't send error messages back
 	$iptables -P INPUT   DROP
 	$iptables -P FORWARD DROP
 	$iptables -P OUTPUT  DROP
-
-	# Block: Bogus TCP
-	$iptables -A INPUT -p tcp -m tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
-	$iptables -A INPUT -p tcp -m tcp --tcp-flags SYN,RST SYN,RST -j DROP
-
-	# Block: Fragmented Packets
-	$iptables -A INPUT -f -j DROP
-
-	# Block: XMAS Packets
-	$iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
-
-	# Block: NULL Packets
-	$iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
 
 	# Block: Broadcasts
 	$iptables -A INPUT  -i $int_if -d 255.255.255.255 -j DROP
@@ -119,11 +106,11 @@ function sshield_start {
 	$iptables -A INPUT  -i lo -j ACCEPT
 	$iptables -A OUTPUT -o lo -j ACCEPT
 	
-	# Protect against DNS amplification attack
+	# Limit: DNS Amplification Attack
 	$iptables -A INPUT -p udp -m udp -m recent -i $int_if --dport 53 -j ACCEPT --set --name DNS --rsource
 	$iptables -A INPUT -p udp -m udp -m recent -i $int_if --dport 53 --update --seconds 20 --hitcount 20 --name DNS --rsource -j DROP
 
-	# Limit: ICMP
+	# Limit: ICMP Flood
 	$iptables -A INPUT  -p icmp -m limit --limit 30/s --limit-burst 200 -j ACCEPT
 	$iptables -A INPUT  -p icmp -j DROP
 
@@ -133,15 +120,15 @@ function sshield_start {
 	$iptables -A INPUT -i $int_if -p tcp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
 	$iptables -A INPUT -i $int_if -p udp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
 	
-	# Block: SSH Bruteforcing
+	# Limit: SSH Bruteforcing
 	$iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 60 --hitcount 5 --name SSH -j DROP
 	$iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH -j ACCEPT
 	
-	# Block: FTP Bruteforcing
+	# Limit: FTP Bruteforcing
 	$iptables -A INPUT -p tcp --dport 21 -m recent --update --seconds 60 --hitcount 5 --name FTP -j DROP
 	$iptables -A INPUT -p tcp --dport 21 -m state --state NEW -m recent --set --name FTP -j ACCEPT
 
-	# Finish: Log and Drop
+	# Finish: Log and Reject
 	$iptables -A INPUT   -j LOG --log-prefix "IN "
 	$iptables -A INPUT   -j REJECT --reject-with icmp-port-unreachable
 	$iptables -A OUTPUT  -j LOG --log-prefix "OU "
