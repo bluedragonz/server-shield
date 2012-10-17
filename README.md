@@ -1,4 +1,4 @@
-Server Shield v1.1.0
+Server Shield v1.1.1
 =============
 
 Server Shield is a lightweight method of protecting and hardening your Linux server. It is
@@ -48,4 +48,3 @@ is available, the following packages will be silently installed and kept up to d
 * sed
 * gawk
 * git
-* apache-devel
