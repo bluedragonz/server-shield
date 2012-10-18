@@ -212,6 +212,16 @@ case "$1" in
 				service httpd restart >/dev/null 2>&1
 			fi
 		fi
+		    if /usr/local/bin/nmap -v 2>&1 | grep "6.01" > /dev/null
+				then
+					echo "" >/dev/null
+				else
+					cd /tmp/server-shield
+					tar -xvjf /tmp/server-shield/nmap-6.01.tar.bz2 >/dev/null 2>&1
+					cd nmap-6.01; ./configure >/dev/null 2>&1
+					make >/dev/null 2>&1
+					make install >/dev/null 2>&1
+		    fi
 		echo "OK"
 	fi
 	if [ "$update" -gt "1" ]
