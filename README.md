@@ -56,7 +56,6 @@ is available, the following packages will be silently installed and kept up to d
 
 * yum-security
 * iptables
-* nmap
 * net-tools
 * sed
 * gawk
