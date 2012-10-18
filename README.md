@@ -11,6 +11,16 @@ your changes don't get overwritten.
 
 *No maintenance required— just set it and forget it!*
 
+
+Why Server Shield?
+------------------
+
+* You want protection that requires absolutely no configuration.
+* You want protection that won't break stuff.
+* You dislike complexity and favor simple solutions.
+* You need exceptional performance.
+
+
 Features
 --------
 
