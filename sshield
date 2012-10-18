@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #####################################################
-###						  ###
+###						  						  ###
 ### 	 Server Shield v1.1.1 by Brian Holt 	  ###
-###						  ###
+###						  						  ###
 #####################################################
 
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -43,14 +43,17 @@
 # 2: sshield, ipconfig, nmap, net-tools, sed, gawk, git, yum-security, mod_antiloris
 update=2
 
-# Public Interface
-int_if=$(ifconfig -a | grep -i "link[ ]*encap[ ]*:[ ]*ethernet" | awk 'BEGIN{ iface="z" }{ if( $1 ~ /^eth/ && iface > $1 ) iface=$1 } END{ print iface }')
+# Public Interfaces
+iface=($(ifconfig  | grep 'eth' | awk '{ print $1 }' | cut -d: -f1 | tr '\n' ' '))
 
-# IP Address
-int_ip=$(hostname -i)
+# Public IP Addresses
+ip=($(ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'))
 
 # Open Ports
-pub_serv=$(nmap --open $int_ip | sed '/report\|open/!d' | awk '/open/{print substr( $1, 0, length($1) - 4)}' | tr '\n' , | awk '{print substr( $1, 0, length($1) - 1)}')
+for i in "${!ip[@]}"
+do
+	pub_serv[$i]=$(nmap --open ${ip[$i]} | sed '/report\|open/!d' | awk '/open/{print substr( $1, 0, length($1) - 4)}' | tr '\n' , | awk '{print substr( $1, 0, length($1) - 1)}')
+done
 
 # Don't edit below here unless you know what you're doing
 
@@ -93,35 +96,34 @@ function sshield_start {
 	$iptables -P INPUT   DROP
 	$iptables -P FORWARD DROP
 	$iptables -P OUTPUT  DROP
-
-	# Block: Broadcasts
-	$iptables -A INPUT  -i $int_if -d 255.255.255.255 -j DROP
-	$iptables -A INPUT  -i $int_if -d 192.168.255.255 -j DROP
-	$iptables -A INPUT  -i $int_if -d 192.168.1.255   -j DROP
-	$iptables -A INPUT             -d 10.0.0.0/8      -j DROP
-	$iptables -A INPUT             -d 169.254.0.0/16  -j DROP
-
-	# Block: Spoofed Packets
-	$iptables -A INPUT  -i $int_if -s $int_ip -m recent --set -j DROP
+	
+	# Block: Spoofed
+	for i in "${!ip[@]}"; do
+		$iptables -A INPUT  -i ${iface[$i]} -s ${ip[$i]} -m recent --set -j DROP
+	done
 
 	# Accept: Loopback
 	$iptables -A INPUT  -i lo -j ACCEPT
 	$iptables -A OUTPUT -o lo -j ACCEPT
 	
 	# Limit: DNS Amplification Attack
-	$iptables -A INPUT -p udp -m udp -m recent -i $int_if --dport 53 -j ACCEPT --set --name DNS --rsource
-	$iptables -A INPUT -p udp -m udp -m recent -i $int_if --dport 53 --update --seconds 20 --hitcount 20 --name DNS --rsource -j DROP
+	for i in "${!iface[@]}"; do
+		$iptables -A INPUT -p udp -m udp -m recent -i ${iface[$i]} --dport 53 -j ACCEPT --set --name DNS --rsource
+		$iptables -A INPUT -p udp -m udp -m recent -i ${iface[$i]} --dport 53 --update --seconds 20 --hitcount 20 --name DNS --rsource -j DROP
+	done
 
 	# Limit: ICMP Flood
 	$iptables -A INPUT  -p icmp -m limit --limit 30/s --limit-burst 200 -j ACCEPT
 	$iptables -A INPUT  -p icmp -j DROP
 
 	# Accept: Established Connections
-	$iptables -A OUTPUT -o $int_if -j ACCEPT
-	$iptables -A INPUT  -i $int_if -m state --state ESTABLISHED,RELATED -j ACCEPT
-	$iptables -A INPUT -i $int_if -p tcp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
-	$iptables -A INPUT -i $int_if -p udp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
-	
+	for i in "${!iface[@]}"; do
+		$iptables -A OUTPUT -o ${iface[$i]} -j ACCEPT
+		$iptables -A INPUT  -i ${iface[$i]} -m state --state ESTABLISHED,RELATED -j ACCEPT
+		$iptables -A INPUT -i ${iface[$i]} -p tcp -d ${ip[$i]} -m multiport --dports ${pub_serv[$i]} -j ACCEPT
+		$iptables -A INPUT -i ${iface[$i]} -p udp -d ${ip[$i]} -m multiport --dports ${pub_serv[$i]} -j ACCEPT
+	done
+
 	# Limit: SSH Bruteforcing
 	$iptables -A INPUT -p tcp --dport 22 -m recent --update --seconds 60 --hitcount 5 --name SSH -j DROP
 	$iptables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH -j ACCEPT
@@ -158,13 +160,17 @@ function sshield_fallback_start {
 	$iptables -A OUTPUT -o lo -j ACCEPT
 
 	# Accept: ICMP
-	$iptables -A INPUT  -i $int_if -d $int_ip -p icmp -j ACCEPT
+	for i in "${!iface[@]}"; do
+		$iptables -A INPUT  -i ${iface[$i]} -d ${ip[$i]} -p icmp -j ACCEPT
+	done
 
 	# Accept: Established Connections
-	$iptables -A OUTPUT -o $int_if -j ACCEPT
-	$iptables -A INPUT  -i $int_if -m state --state ESTABLISHED,RELATED -j ACCEPT
-	$iptables -A INPUT -i $int_if -p tcp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
-	$iptables -A INPUT -i $int_if -p udp -d $int_ip -m multiport --dports $pub_serv -j ACCEPT
+	for i in "${!iface[@]}"; do
+		$iptables -A OUTPUT -o ${iface[$i]} -j ACCEPT
+		$iptables -A INPUT  -i ${iface[$i]} -m state --state ESTABLISHED,RELATED -j ACCEPT
+		$iptables -A INPUT -i ${iface[$i]} -p tcp -d ${ip[$i]} -m multiport --dports ${pub_serv[$i]} -j ACCEPT
+		$iptables -A INPUT -i ${iface[$i]} -p udp -d ${ip[$i]} -m multiport --dports ${pub_serv[$i]} -j ACCEPT
+	done
 
 	# Finish: Log
 	$iptables -A INPUT   -j LOG --log-prefix "IN "
