@@ -63,5 +63,5 @@ is available, the following packages will be silently installed and kept up to d
 
 Wanna Help?
 -----------
-If you're interested in helping out, fork the project and start coding! This project is young
-and there is a lot of room for improvement. All comments and suggestions are welcomed too.
+If you're interested in helping out, fork the project and start coding! The project is young
+and there is still a lot of room for improvement. All comments, questions, conerns and suggestions are welcomed.
