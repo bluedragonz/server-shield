@@ -50,8 +50,7 @@ iface=($(ifconfig  | grep 'eth' | awk '{ print $1 }' | cut -d: -f1 | tr '\n' ' '
 ip=($(ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'))
 
 # Open Ports
-for i in "${!ip[@]}"
-do
+for i in "${!ip[@]}"; do
 	pub_serv[$i]=$(nmap --open ${ip[$i]} | sed '/report\|open/!d' | awk '/open/{print substr( $1, 0, length($1) - 4)}' | tr '\n' , | awk '{print substr( $1, 0, length($1) - 1)}')
 done
 
