@@ -18,6 +18,7 @@ Why Server Shield?
 * You want protection that requires absolutely no configuration.
 * You want protection that won't break stuff.
 * You dislike complexity and favor simple solutions.
+* You understand the importance of preventative measures
 * You need exceptional performance.
 
 
