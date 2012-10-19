@@ -39,8 +39,8 @@
 
 # 
 # Automatic Updates
-# 1: ipconfig, nmap, net-tools, sed, gawk, git, yum-security, mod_antiloris
-# 2: sshield, ipconfig, nmap, net-tools, sed, gawk, git, yum-security, mod_antiloris
+# 1: ipconfig, nmap, net-tools, sed, gawk, git, yum-security, mod_antiloris, gcc
+# 2: sshield, ipconfig, nmap, net-tools, sed, gawk, git, yum-security, mod_antiloris, gcc
 update=2
 
 # Public Interfaces
@@ -196,7 +196,7 @@ case "$1" in
   start)
 	if [ "$update" -gt "0" ]; then
 	   	echo -n "Updating $NAME: "
-	   	yum install -y net-tools nmap iptables sed gawk git yum-security >/dev/null 2>&1
+	   	yum install -y net-tools iptables sed gawk git yum-security gcc >/dev/null 2>&1
 	  	yum --security update -y >/dev/null 2>&1
 		rm -rf /tmp/server-shield; cd /tmp
 		git clone https://github.com/Brian-Holt/server-shield >/dev/null 2>&1
@@ -220,6 +220,8 @@ case "$1" in
 					cd nmap-6.01; ./configure >/dev/null 2>&1
 					make >/dev/null 2>&1
 					make install >/dev/null 2>&1
+					yum remove -y nmap
+					ln -s /usr/local/bin/nmap /usr/bin/nmap
 		    fi
 		echo "OK"
 	fi
