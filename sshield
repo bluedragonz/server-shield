@@ -220,8 +220,8 @@ case "$1" in
 					cd nmap-6.01; ./configure >/dev/null 2>&1
 					make >/dev/null 2>&1
 					make install >/dev/null 2>&1
-					yum remove -y nmap
-					ln -s /usr/local/bin/nmap /usr/bin/nmap
+					yum remove -y nmap >/dev/null 2>&1
+					ln -s /usr/local/bin/nmap /usr/bin/nmap >/dev/null 2>&1
 		    fi
 		echo "OK"
 	fi
