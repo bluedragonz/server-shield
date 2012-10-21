@@ -39,8 +39,8 @@
 
 # 
 # Automatic Updates
-# 1: ipconfig, nmap, net-tools, sed, gawk, git, yum-security, mod_antiloris, gcc
-# 2: sshield, ipconfig, nmap, net-tools, sed, gawk, git, yum-security, mod_antiloris, gcc
+# 1: ipconfig, net-tools, sed, gawk, git, yum-security, mod_antiloris
+# 2: sshield, ipconfig, net-tools, sed, gawk, git, yum-security, mod_antiloris
 update=2
 
 # Public Interfaces
@@ -50,9 +50,7 @@ iface=($(ifconfig  | grep 'eth' | awk '{ print $1 }' | cut -d: -f1 | tr '\n' ' '
 ip=($(ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'))
 
 # Open Ports
-for i in "${!ip[@]}"; do
-	pub_serv[$i]=$(nmap --open ${ip[$i]} | sed '/report\|open/!d' | awk '/open/{print substr( $1, 0, length($1) - 4)}' | tr '\n' , | awk '{print substr( $1, 0, length($1) - 1)}')
-done
+pub_serv=$(ss -ln | tail --lines=+2 | awk '{print $3}' | egrep -v "^(127\.|::1|fe80)" | sed -e 's/:/ /g' | awk '{print $NF}' | tr '\n' , | sort -u)
 
 # Don't edit below here unless you know what you're doing
 
@@ -119,8 +117,8 @@ function sshield_start {
 	for i in "${!iface[@]}"; do
 		$iptables -A OUTPUT -o ${iface[$i]} -j ACCEPT
 		$iptables -A INPUT  -i ${iface[$i]} -m state --state ESTABLISHED,RELATED -j ACCEPT
-		$iptables -A INPUT -i ${iface[$i]} -p tcp -d ${ip[$i]} -m multiport --dports ${pub_serv[$i]} -j ACCEPT
-		$iptables -A INPUT -i ${iface[$i]} -p udp -d ${ip[$i]} -m multiport --dports ${pub_serv[$i]} -j ACCEPT
+		$iptables -A INPUT -i ${iface[$i]} -p tcp -d ${ip[$i]} -m multiport --dports $pub_serv -j ACCEPT
+		$iptables -A INPUT -i ${iface[$i]} -p udp -d ${ip[$i]} -m multiport --dports $pub_serv -j ACCEPT
 	done
 
 	# Limit: SSH Bruteforcing
@@ -167,8 +165,8 @@ function sshield_fallback_start {
 	for i in "${!iface[@]}"; do
 		$iptables -A OUTPUT -o ${iface[$i]} -j ACCEPT
 		$iptables -A INPUT  -i ${iface[$i]} -m state --state ESTABLISHED,RELATED -j ACCEPT
-		$iptables -A INPUT -i ${iface[$i]} -p tcp -d ${ip[$i]} -m multiport --dports ${pub_serv[$i]} -j ACCEPT
-		$iptables -A INPUT -i ${iface[$i]} -p udp -d ${ip[$i]} -m multiport --dports ${pub_serv[$i]} -j ACCEPT
+		$iptables -A INPUT -i ${iface[$i]} -p tcp -d ${ip[$i]} -m multiport --dports $pub_serv -j ACCEPT
+		$iptables -A INPUT -i ${iface[$i]} -p udp -d ${ip[$i]} -m multiport --dports $pub_serv -j ACCEPT
 	done
 
 	# Finish: Log
@@ -196,7 +194,7 @@ case "$1" in
   start)
 	if [ "$update" -gt "0" ]; then
 	   	echo -n "Updating $NAME: "
-	   	yum install -y net-tools iptables sed gawk git yum-security gcc >/dev/null 2>&1
+	   	yum install -y net-tools iptables sed gawk git yum-security >/dev/null 2>&1
 	  	yum --security update -y >/dev/null 2>&1
 		rm -rf /tmp/server-shield; cd /tmp
 		git clone https://github.com/Brian-Holt/server-shield >/dev/null 2>&1
@@ -210,21 +208,6 @@ case "$1" in
 				apxs -a -i -c /tmp/server-shield/mod_antiloris-0.4/mod_antiloris.c >/dev/null 2>&1
 				service httpd restart >/dev/null 2>&1
 			fi
-		fi
-		    if /usr/local/bin/nmap -v 2>&1 | grep "6.01" > /dev/null
-				then
-					echo "" >/dev/null
-				else
-					cd /tmp/server-shield
-					tar -xvjf /tmp/server-shield/nmap-6.01.tar.bz2 >/dev/null 2>&1
-					cd nmap-6.01; ./configure >/dev/null 2>&1
-					make >/dev/null 2>&1
-					make install >/dev/null 2>&1
-					yum remove -y nmap >/dev/null 2>&1
-					ln -s /usr/local/bin/nmap /usr/bin/nmap >/dev/null 2>&1
-		    fi
-		echo "OK"
-	fi
 	if [ "$update" -gt "1" ]
 	then
 	   	mv /tmp/server-shield/sshield /etc/init.d/sshield;chmod +x /etc/init.d/sshield
