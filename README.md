@@ -1,4 +1,4 @@
-Server Shield v1.1.3
+Server Shield v1.1.4
 =============
 
 Server Shield is a lightweight method of protecting and hardening your Linux server. It is
