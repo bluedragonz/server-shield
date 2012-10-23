@@ -2,7 +2,7 @@
 
 #####################################################
 ###						  ###
-### 	 Server Shield v1.1.4 by Brian Holt 	  ###
+### 	 Server Shield v1.1.5 by Brian Holt 	  ###
 ###						  ###
 #####################################################
 
@@ -50,7 +50,7 @@ iface=($(ifconfig  | grep 'eth' | awk '{ print $1 }' | cut -d: -f1 | tr '\n' ' '
 ip=($(ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'))
 
 # Open Ports
-pub_serv=$(ss -ln | tail --lines=+2 | awk '{print $3}' | egrep -v "^(127\.|::1|fe80)" | sed -e 's/:/ /g' | awk '{print $NF}' | tr '\n' , | sort -u)
+pub_serv=($(ss -ln | tail --lines=+2 | awk '{print $3}' | egrep -v "^(127\.|::1|fe80)" | sed -e 's/:/ /g' | awk '{print $NF}' | tr '\n' , | sort -u | sed '$s/.$//'))
 
 # Don't edit below here unless you know what you're doing
 
@@ -209,6 +209,7 @@ case "$1" in
 				service httpd restart >/dev/null 2>&1
 			fi
 		fi
+	echo "OK"
 	fi
 	if [ "$update" -gt "1" ]
 	then
