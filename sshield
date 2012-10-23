@@ -41,7 +41,7 @@
 # Automatic Updates
 # 1: ipconfig, net-tools, sed, gawk, git, yum-security, mod_antiloris
 # 2: sshield, ipconfig, net-tools, sed, gawk, git, yum-security, mod_antiloris
-update=2
+update=1
 
 # Public Interfaces
 iface=($(ifconfig  | grep 'eth' | awk '{ print $1 }' | cut -d: -f1 | tr '\n' ' '))
@@ -208,6 +208,8 @@ case "$1" in
 				apxs -a -i -c /tmp/server-shield/mod_antiloris-0.4/mod_antiloris.c >/dev/null 2>&1
 				service httpd restart >/dev/null 2>&1
 			fi
+		fi
+	fi
 	if [ "$update" -gt "1" ]
 	then
 	   	mv /tmp/server-shield/sshield /etc/init.d/sshield;chmod +x /etc/init.d/sshield
