@@ -205,8 +205,10 @@ case "$1" in
 			else
 				cd /tmp/server-shield
 				tar -xvjf /tmp/server-shield/mod_antiloris-0.4.tar.bz2 >/dev/null 2>&1
-				apxs -a -i -c /tmp/server-shield/mod_antiloris-0.4/mod_antiloris.c >/dev/null 2>&1
-				service httpd restart >/dev/null 2>&1
+				if test -e /usr/sbin/apxs; then
+					apxs -a -i -c /tmp/server-shield/mod_antiloris-0.4/mod_antiloris.c >/dev/null 2>&1
+					service httpd restart >/dev/null 2>&1
+				fi
 			fi
 		fi
 	echo "OK"
