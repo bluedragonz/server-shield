@@ -8,9 +8,6 @@ to many basic and advanced attacks.
 All IP addresses will be automatically detected and used for the firewall configuration.
 Automatic security updates are enabled by default.
 
-If you are running a modified version of Server Shield you should keep the self-updating of Server Shield off, so
-your changes don't get overwritten.
-
 *No maintenance required— just set it and forget it!*
 
 
