@@ -2,7 +2,7 @@
 
 #####################################################
 ###						  ###
-### 	 Server Shield v1.1.5 by Brian Holt 	  ###
+### 	         Server Shield v1.1.5 	          ###
 ###						  ###
 #####################################################
 
@@ -24,7 +24,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-# Copyright (c) 2012 Brian Holt. All rights reserved.
+# Copyright (c) 2012. All rights reserved.
 
 ### Slowloris Protection
 ### Firewall Hardening
