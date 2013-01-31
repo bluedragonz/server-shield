@@ -71,10 +71,10 @@ function sshield_start {
 	    find / -iname '*.bash_history' -type f -exec rm -f {} \;
 	fi
 
-	# Protect against ICMP "Smurf"
+	# Protect against taking part in an ICMP "Smurf"
 	echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
 
-	# Protect against TCP Time-Wait          
+	# Protect against TCP Time-Wait attacks          
 	echo 1 > /proc/sys/net/ipv4/tcp_rfc1337
 
 	# Don't bother logging bogus error responses					 
@@ -194,7 +194,7 @@ case "$1" in
 	   	yum install -y net-tools iptables sed gawk git yum-security >/dev/null 2>&1
 	  	yum --security update -y >/dev/null 2>&1
 		rm -rf /tmp/server-shield; cd /tmp
-		git clone https://github.com/Brian-Holt/server-shield >/dev/null 2>&1
+		git clone https://github.com/bluedragonz/server-shield >/dev/null 2>&1
 		if test -e /usr/sbin/httpd; then
 		    if httpd -M 2>&1 | grep antiloris > /dev/null
 			then
