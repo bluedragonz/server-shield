@@ -27,8 +27,6 @@ Features
 * Slowloris Protection
 * Firewall Hardening
 * ICMP/Ping Flood Resistance
-* DoS Resistance
-* Spoof Resistance
 * FTP/SSH Bruteforce Protection
 * Automatic Security Updates
 * Disables Bash History
