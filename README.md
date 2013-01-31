@@ -26,10 +26,9 @@ Features
 
 * Slowloris Protection
 * Firewall Hardening
-* TCP Hardening
-* ICMP/Ping Flood Protection
-* DoS Protection
-* Spoof Protection
+* ICMP/Ping Flood Resistance
+* DoS Resistance
+* Spoof Resistance
 * FTP/SSH Bruteforce Protection
 * Automatic Security Updates
 * Disables Bash History
