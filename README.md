@@ -38,7 +38,7 @@ Features
 Installation
 ------------
 
-    git clone https://github.com/Brian-Holt/server-shield
+    git clone https://github.com/bluedragonz/server-shield
 
     cd server-shield;chmod +x sshield;mv sshield /etc/init.d
 
